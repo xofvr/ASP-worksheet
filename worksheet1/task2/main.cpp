@@ -1,7 +1,7 @@
 #include "my_string2.hpp"
 
 int main() {
-    my_string s("Hello world!");
+    my_string s("bruh");
     s.print();
     {
         my_string t = s; // calls the copy constructor

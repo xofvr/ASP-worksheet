@@ -11,6 +11,7 @@ class bump_allocator {
         unsigned int allocation_count = 0;
         size_t total_size = 0;
 
+
     public:
     // Constructor to initialize memory block with given capacity (default 30)
         bump_allocator() : bump_allocator(12) {}
@@ -62,10 +63,10 @@ class bump_allocator {
         void dealloc() {
             if (allocation_count > 0) {
                 allocation_count--;
-            }
-            if (allocation_count == 0) {
-                next = memory; // Reset pointer to start of memory block
-                std::cout << "Allocator has reset." << std::endl;
+                if (allocation_count == 0) {
+                    next = memory; // Only reset when all allocations are deallocated
+                    std::cout << "Allocator has reset." << std::endl;
+                }
             }
         }
 };

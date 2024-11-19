@@ -1,7 +1,7 @@
 #include "my_string.hpp"
 
 // default constructor
-//  will crash if the string is empty!
+
 my_string::my_string() : data(nullptr){
 }
 

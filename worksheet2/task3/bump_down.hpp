@@ -1,5 +1,5 @@
-#ifndef BUMP_ALLOCATOR_H
-#define BUMP_ALLOCATOR_H
+#ifndef BUMP_DOWN_ALLOCATOR_H
+#define BUMP_DOWN_ALLOCATOR_H
 
 #include <cstddef>
 #include <iostream>
@@ -12,25 +12,20 @@ class bump_allocator {
         size_t total_size = 0;
 
     public:
-    // Constructor to initialize memory block with given capacity (default 30)
         bump_allocator() : bump_allocator(12) {}
 
-    // If the capacity is greater than zero, memory is allocated to a new block of memory (new char[capacity]). On the other hand, if the capacity is not greater than zero (for instance, if it’s zero), memory is set to nullptr, indicating that no memory was allocated.
         bump_allocator(std::size_t capacity) {
             memory = (capacity > 0) ? new char[capacity] : nullptr;
             total_size = capacity;
-            next = memory;
-        }   
+            next = memory + capacity; // Start at end of memory block
+        }
 
-        // Destructor to release memory block
         ~bump_allocator() {
             delete[] memory;
         }
 
-
         template <typename T>
         T* alloc(std::size_t num = 1) {
-            // Get alignment requirement for type T
             constexpr std::size_t align = alignof(T);
             
             // Calculate required padding to align properly
@@ -43,28 +38,26 @@ class bump_allocator {
             std::size_t required_size = padding + (num * sizeof(T));
 
             // Check if there's enough capacity left
-            if (memory == nullptr || (next + required_size > memory + total_size)) {
+            if (memory == nullptr || (next - required_size < memory)) {
                 return nullptr; // Not enough memory
             }
-            // Apply padding
-            next += padding;
+            
+            // Apply padding by moving down
+            next -= padding;
+            
+            // Move pointer down by required size
+            next -= (num * sizeof(T));
+            
+            // Return aligned pointer cast to requested type
+            return reinterpret_cast<T*>(next);
+        }
 
-            // Allocate memory and update the bump pointer
-            T* result = reinterpret_cast<T*>(next);
-            next += num * sizeof(T);
-            allocation_count++;
-            std::cout << "Allocated " << num << " objects of size " << sizeof(T) 
-                    << " with padding " << padding << " bytes" << std::endl;
-            return result;
-            }
-
-        // Dealloc function: decrements allocation count and resets if zero
         void dealloc() {
             if (allocation_count > 0) {
                 allocation_count--;
             }
             if (allocation_count == 0) {
-                next = memory; // Reset pointer to start of memory block
+                next = memory + total_size; // Reset pointer to end of memory block
                 std::cout << "Allocator has reset." << std::endl;
             }
         }

@@ -43,15 +43,17 @@ my_string::~my_string() {
 
 }
 
-// Method to get a character at a given index
 char my_string::getChar(const int& i) const {
-    // Implementation here
+    if (i < 0 || data == nullptr || i >= strlen(data)) {
+        throw std::out_of_range("Index out of bounds");
+    }
     return data[i];
 }
 
-// Method to set a character at a given index
 void my_string::setChar(const int& i, const char& c) {
-    // Implementation here
+    if (i < 0 || data == nullptr || i >= strlen(data)) {
+        throw std::out_of_range("Index out of bounds");
+    }
     data[i] = c;
 }
 

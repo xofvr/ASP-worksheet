@@ -1,6 +1,7 @@
 #include <iostream>
 template<typename T>
 class refcount {
+    
 public:
     // Constructor: Takes a pointer to the object we want to manage
     refcount(T* obj) : data(obj), refs(new int(1)) {}
