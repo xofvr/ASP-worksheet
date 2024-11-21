@@ -29,35 +29,36 @@ class bump_allocator {
             delete[] memory;
         }
 
-        template <typename T>
-        T* alloc(std::size_t num = 1) {
-            // alignment of T 
-            constexpr std::size_t align = alignof(T);
-            
-            // padding to align
-            std::size_t padding = (reinterpret_cast<std::uintptr_t>(next) % align);
-            if (padding > 0) {
-                padding = align - padding;
-            }
-            
-            // total required size including padding
-            std::size_t required_size = padding + (num * sizeof(T));
-
-            // to see if there's enough capacity left
-            if (memory == nullptr || (next + required_size > memory + total_size)) {
-                return nullptr; // returns nullptr if no capacity left
-            }
-            
-            next += padding;
-
-            // allocates the memory and applies the set padding
-            T* result = reinterpret_cast<T*>(next);
-            next += num * sizeof(T);
-            allocation_count++;
-            std::cout << "Allocated " << num << " objects of size " << sizeof(T) 
-                    << " with padding " << padding << " bytes" << std::endl;
-            return result;
-            }
+    template <typename T>
+    T* alloc(std::size_t num = 1) {
+        if (num == 0) return nullptr;
+        
+        // Ensure proper alignment
+        std::uintptr_t current = reinterpret_cast<std::uintptr_t>(next);
+        std::uintptr_t aligned = (current + alignof(T) - 1) & ~(alignof(T) - 1);
+        std::size_t padding = aligned - current;
+        
+        // Check for overflow
+        if (num > (std::numeric_limits<std::size_t>::max() - padding) / sizeof(T)) {
+            return nullptr;
+        }
+        
+        std::size_t required_size = padding + (num * sizeof(T));
+        
+        // Check if we have enough space
+        if (memory == nullptr || 
+            next + required_size > memory + total_size || 
+            next + required_size < next) { // overflow check
+            return nullptr;
+        }
+        
+        next += padding;
+        T* result = reinterpret_cast<T*>(next);
+        next += num * sizeof(T);
+        allocation_count++;
+        
+        return result;
+    }
 
         // just decrements allocation count and resets if zero
         void dealloc() {

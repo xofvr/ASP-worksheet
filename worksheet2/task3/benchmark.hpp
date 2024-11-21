@@ -18,4 +18,4 @@ public:
     }
 };
 
-#endif // BENCHMARK_HPP
+#endif 

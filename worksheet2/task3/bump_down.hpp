@@ -48,6 +48,9 @@ class bump_allocator {
             // Move pointer down by required size
             next -= (num * sizeof(T));
             
+            // Increment allocation counter
+            allocation_count++;  // Add this line
+            
             // Return aligned pointer cast to requested type
             return reinterpret_cast<T*>(next);
         }
