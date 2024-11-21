@@ -2,7 +2,6 @@
 
 "clang++ -std=c++17 simpletest/simpletest.cpp bump_test.cpp -o bump_test"
 
-"Check if the bump up implementation is right"
 ### Task 1
 
 According to the specification, alloc() and dealloc() was supposed to be implemented.

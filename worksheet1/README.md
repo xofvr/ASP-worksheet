@@ -27,11 +27,122 @@ The `my_string` class consists of the following methods:
    - **`setChar(int i, char c)`**: Sets the character at index `i` to `c`.
    - **`print()`**: Prints the current string.
 
+
 ### Code Structure
 
 - **my_string.cpp**: Has the method definitions for constructors, assignment operator, and character manipulation methods.
+
+```cpp
+
+// default constructor
+my_string::my_string() : data(nullptr){
+}
+
+// c style string constructor
+my_string::my_string(const char* str) {
+    data = new char[strlen(str) + 1];  // allocating space for the string and +1 for null terminator
+    strcpy(data, str); // copying the string into the memory 
+
+}
+
+// copy constructor
+my_string::my_string(const my_string& s) {
+    // this shares the same memory, so instead of deep copy we do a shallow copy
+    data = s.data; 
+}
+
+// assignment operator
+my_string& my_string::operator=(const my_string& s) {
+    // handles self assignment
+    if (this == &s) return *this; 
+    delete[] data;  // delete old memory
+    data = s.data;  // shallow copy
+    return *this;
+}
+
+my_string::~my_string() {
+    // empty as its a different task
+}
+
+// method to get a character at a given index
+char my_string::getChar(const int& i) const {
+    // i will be the index of the character so return the character at that index
+    return data[i];
+}
+
+// method to set a character at a given index
+void my_string::setChar(const int& i, const char& c) {
+    // sets the caracter at index i to c
+    data[i] = c;
+}
+
+// Print the string 
+void my_string::print() const {
+
+    std::cout << data << std::endl;
+}
+
+```
+
 - **my_string.hpp**: Declares the `my_string` class and its methods, with header guards to prevent multiple inclusions.
+
+```cpp
+class my_string {
+    private:
+        char* data;  // pointer to data
+        
+    public:
+    
+    // default constructor
+    my_string();
+    
+    // parameterised constructor that takes a C-style string
+    // takes a const char* and creates a copy of it
+    my_string(const char* str);
+    
+    // copy constructor
+    my_string(const my_string& s);
+    
+    // assignment operator
+    my_string& operator=(const my_string& s);
+    
+    // destructor
+    ~my_string();
+    
+    // method to get a character at a given index at i
+    char getChar(const int& i) const;
+
+    // method to set a character at a given index at i to c
+    void setChar(const int& i, const char& c);
+    
+    // just print
+    void print() const;
+
+};
+
+```
+
 - **main.cpp**: Has the main function.
+
+```cpp
+#include "my_string.hpp"
+
+int main() {
+    my_string s("");
+    s.print();
+    {
+        my_string t = s; // calls the copy const
+        s.print(); // main thing 
+        t.print(); // we copied s, t should be the same
+        std::cout << s.getChar(1) << std::endl; // should print the character at index 1
+        s.print(); // should print the string as no modifications were made
+        t.print(); // again, same thing should be printed
+    }
+    s.setChar(1, 'E'); // change the character at index 1 to E
+    s.print(); 
+    //t.print(); // should throw an error as t is now out of scope
+}
+```
 
 
 ### Expected Output
