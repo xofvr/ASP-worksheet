@@ -50,7 +50,7 @@ if (memory == nullptr || (next + required_size > memory + total_size)) {
     return nullptr; // Not enough memory
 }
 ```
-Calculates teh size and if there's not enough memory left, returns a `nullptr` if/ allocation would exceed its capacity. 
+Calculates the size and if there's not enough memory left, returns a `nullptr` if/ allocation would exceed its capacity. 
 
 3. Memory Alloc
 
